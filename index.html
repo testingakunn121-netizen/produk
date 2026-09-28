@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ASCENSION — Digital Store</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08050f;--card:rgba(24,14,42,.78);--border:rgba(155,92,255,.28);
+  --purple:#9b5cff;--violet:#c084fc;--text:#f3eaff;--muted:#a89bc0;
+  --glow:0 0 28px rgba(155,92,255,.28);--ease:cubic-bezier(0.32,0.72,0,1);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{min-height:100dvh}
+img{max-width:100%;display:block}
+button,a{font-family:inherit;border:none;outline:none;cursor:pointer;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+
+#app{max-width:480px;margin:0 auto;min-height:100dvh;position:relative;overflow:hidden}
+.page{display:none;min-height:100dvh;padding-bottom:40px;position:absolute;top:0;left:0;right:0;width:100%;opacity:0;transform:translateX(28px) scale(.985);transition:opacity .42s var(--ease),transform .42s var(--ease);pointer-events:none;will-change:opacity,transform}
+.page.active{display:block;position:relative;opacity:1;transform:translateX(0) scale(1);pointer-events:auto;z-index:2}
+.page.exit-left{display:block;position:absolute;opacity:0;transform:translateX(-24px) scale(.985);pointer-events:none;z-index:1}
+.page.enter-from-right{transform:translateX(28px) scale(.985);opacity:0}
+
+.hero{position:relative;height:270px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:24px}
+.hero-bg{position:absolute;inset:0;background:#120b1f url("https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/0a09f764-3556-4522-92b2-ded389e24693.png") center/cover no-repeat;filter:blur(2.5px) brightness(.42);transform:scale(1.06)}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,5,15,.25) 0%,rgba(8,5,15,.7) 55%,var(--bg) 100%)}
+.hero-c{position:relative;z-index:2;text-align:center;width:100%;padding:0 20px}
+.badge{position:absolute;top:14px;right:16px;z-index:3;font-size:10px;letter-spacing:2px;color:var(--muted)}
+.pf{width:88px;height:88px;margin:0 auto 12px;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--purple),var(--violet));box-shadow:var(--glow)}
+.pf img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg);background:#1a0f2e}
+.brand{font-size:26px;font-weight:800;letter-spacing:3px;color:#efe6ff}
+.sub{font-size:11px;letter-spacing:3px;color:var(--muted);margin-top:4px}
+
+.sec{padding:16px 14px 8px}
+.stitle{text-align:center;font-size:12px;letter-spacing:2px;color:var(--muted);margin-bottom:14px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.25);transition:transform .2s var(--ease)}
+.card:active{transform:scale(.98)}
+.cicon{width:50px;height:50px;border-radius:12px;background:#140c24;border:1px solid var(--border);overflow:hidden;flex-shrink:0}
+.cicon img{width:100%;height:100%;object-fit:cover}
+.cinfo{flex:1;min-width:0}
+.cname{font-size:14px;font-weight:700;margin-bottom:2px}
+.csub{font-size:12px;color:var(--muted)}
+.carrow{width:28px;height:28px;border-radius:50%;background:rgba(155,92,255,.15);border:1px solid rgba(155,92,255,.3);display:flex;align-items:center;justify-content:center;color:var(--violet);font-size:16px;flex-shrink:0}
+
+.prod{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.22)}
+.ptop{display:flex;align-items:center;gap:12px}
+.pname{font-size:14px;font-weight:700;margin-bottom:3px}
+.pprice{font-size:15px;font-weight:700;color:var(--violet)}
+.bbuy{display:block;width:100%;margin-top:12px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:700;font-size:14px;letter-spacing:1px;padding:12px;border-radius:12px;text-align:center;transition:transform .2s var(--ease)}
+.bbuy:active{transform:scale(.97)}
+
+/* KEUNGGULAN */
+.keunggulan{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin:4px 0 16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.keunggulan h3{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--violet);margin-bottom:12px;text-align:center}
+.keunggulan ul{list-style:none}
+.keunggulan li{font-size:12px;color:var(--muted);padding:7px 0;border-bottom:1px solid rgba(160,90,255,.1);display:flex;align-items:flex-start;gap:8px;line-height:1.45}
+.keunggulan li:last-child{border-bottom:none}
+.keunggulan li::before{content:"›";color:var(--violet);font-weight:700;flex-shrink:0}
+
+.phdr{text-align:center;padding:22px 16px 12px}
+.phdr h1{font-size:17px;font-weight:750;letter-spacing:1px}
+.phdr p{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px}
+
+.cbox{margin:16px 14px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.chead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.chead .ico{width:34px;height:34px;border-radius:50%;background:rgba(155,92,255,.15);border:1px solid rgba(155,92,255,.3);display:flex;align-items:center;justify-content:center;font-size:16px}
+.chead h3{font-size:14px;font-weight:700}
+.cdesc{font-size:12px;color:var(--muted);margin-bottom:12px;padding-left:44px}
+.bcon{display:flex;align-items:center;justify-content:space-between;background:rgba(20,12,36,.8);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;font-size:13px;font-weight:600}
+.bcon .left{display:flex;align-items:center;gap:10px}
+.dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.dot.wa{background:#25D366}.dot.tg{background:#0088cc}
+.chev{color:var(--violet)}
+
+.footer{text-align:center;padding:24px 14px 28px;color:var(--muted);font-size:11px}
+.footer .fb{font-weight:700;letter-spacing:2px;color:var(--text);font-size:13px;margin-bottom:2px}
+.footer .fs{letter-spacing:2px;margin-bottom:8px;font-size:10px}
+.footer .fc{opacity:.55}
+
+.sum{margin:10px 14px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 16px}
+.srow{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(160,90,255,.12);font-size:14px}
+.srow:last-of-type{border-bottom:none}
+.sl{color:var(--muted);font-size:12px}
+.sv{font-weight:650;text-align:right;max-width:58%}
+.stot{margin-top:6px;padding-top:12px;border-top:1px solid rgba(160,90,255,.25)}
+.stot .sv{color:var(--violet);font-size:16px}
+.bmain{display:block;width:100%;margin-top:16px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:700;font-size:14px;letter-spacing:1px;padding:14px;border-radius:14px;text-align:center;box-shadow:0 6px 22px rgba(124,58,237,.35)}
+.bmain:active{transform:scale(.98)}
+
+.pm-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 20px 30px;gap:14px}
+.pm{display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:360px;transition:transform .2s var(--ease)}
+.pm:active{transform:scale(.975)}
+.pm-ico{width:52px;height:52px;border-radius:14px;background:#140c24;border:1px solid var(--border);overflow:hidden;flex-shrink:0}
+.pm-ico img{width:100%;height:100%;object-fit:cover}
+.pm-info{flex:1}
+.pm-name{font-size:16px;font-weight:700;margin-bottom:2px}
+.pm-desc{font-size:12px;color:var(--muted)}
+.pm-arr{color:var(--violet);font-size:18px}
+
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(160,90,255,.12)}
+.info-row:last-of-type{border-bottom:none}
+.info-label{font-size:12px;color:var(--muted)}
+.info-val{font-size:16px;font-weight:700;text-align:right}
+.info-val.purple{color:var(--violet)}
+.btn-copy{display:block;width:100%;margin-top:16px;padding:14px;border-radius:12px;background:rgba(155,92,255,.15);border:1px solid rgba(155,92,255,.4);color:var(--violet);font-weight:700;font-size:13px;letter-spacing:1px;text-align:center}
+.btn-copy:active{background:rgba(155,92,255,.28)}
+
+.steps{margin-top:4px}
+.steps li{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:7px}
+.steps strong{color:var(--text)}
+
+.qris-wrap{text-align:center;padding:0 16px}
+.qris-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 16px;display:inline-block;width:100%}
+.qris-label{font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:14px}
+.qris-box{max-width:250px;margin:0 auto;background:#fff;border-radius:14px;padding:10px;cursor:pointer;box-shadow:0 0 28px rgba(155,92,255,.22)}
+.qris-box:active{transform:scale(.97)}
+.qris-box img{width:100%;height:auto;object-fit:contain}
+.qris-hint{font-size:12px;color:var(--violet);margin-top:12px;font-weight:600}
+
+.btn-proof{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:700;font-size:14px;letter-spacing:.5px;text-align:center;box-shadow:0 6px 22px rgba(34,197,94,.35);transition:transform .2s var(--ease)}
+.btn-proof:active{transform:scale(.97)}
+.proof-note{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+
+.faq-sec{padding:8px 14px 4px}
+.faq-title{text-align:center;font-size:12px;letter-spacing:2px;color:var(--muted);margin-bottom:12px}
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s var(--ease)}
+.faq-item.open{border-color:rgba(160,90,255,.45)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;cursor:pointer;font-size:13px;font-weight:600;user-select:none}
+.faq-q:active{opacity:.85}
+.faq-arrow{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(155,92,255,.12);border:1px solid rgba(155,92,255,.25);display:flex;align-items:center;justify-content:center;color:var(--violet);font-size:11px;transition:transform .3s var(--ease)}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s var(--ease),padding .25s var(--ease);font-size:12px;line-height:1.65;color:var(--muted);padding:0 16px}
+.faq-item.open .faq-a{max-height:220px;padding:0 16px 14px}
+
+.lb{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .3s var(--ease)}
+.lb.open{display:flex;opacity:1}
+.lb-toolbar{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(10,6,18,.9);z-index:10}
+.lb-toolbar button{width:42px;height:42px;border-radius:12px;background:rgba(155,92,255,.2);border:1px solid rgba(155,92,255,.4);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.lb-toolbar .lb-title{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px}
+.lb-stage{flex:1;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;touch-action:none;position:relative}
+.lb-img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;will-change:transform;user-select:none;pointer-events:none}
+.lb-hint{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted);pointer-events:none}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(24,14,42,.97);border:1px solid rgba(160,90,255,.45);color:var(--text);font-size:13px;font-weight:600;padding:13px 24px;border-radius:14px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);z-index:100000;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-ov"></div>
+    <div class="badge">100 · SAFE · TRANSAKSI</div>
+    <div class="hero-c">
+      <div class="pf"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/4b0f78a4-d3e5-4c69-8a7c-1a7d8e784a92.png" alt="ASCENSION"></div>
+      <div class="brand">ASCENSION</div>
+      <div class="sub">By Zumaa</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="stitle">— PRODUK YANG TERSEDIA —</div>
+    <div class="card" data-cat="files">
+      <div class="cicon"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/ff9063d7-a0cb-47e8-afc3-79820bc1de21.jpg" alt=""></div>
+      <div class="cinfo"><div class="cname">FILES COMBO SETING</div><div class="csub">3 Varian · mulai Rp5.000</div></div>
+      <div class="carrow">›</div>
+    </div>
+    <div class="card" data-cat="nemrax">
+      <div class="cicon"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/609dbe80-4b70-4b9d-9518-d126079c0391.jpg" alt=""></div>
+      <div class="cinfo"><div class="cname">FILE X NEMERA BRUTAL</div><div class="csub">3 Varian · mulai Rp7.000</div></div>
+      <div class="carrow">›</div>
+    </div>
+    <div class="card" data-cat="fileseting">
+      <div class="cicon"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/4b0f78a4-d3e5-4c69-8a7c-1a7d8e784a92.png" alt=""></div>
+      <div class="cinfo"><div class="cname">FILE SETING</div><div class="csub">2 Varian · mulai Rp5.000</div></div>
+      <div class="carrow">›</div>
+    </div>
+  </div>
+
+  <div class="faq-sec">
+    <div class="faq-title">— PERTANYAAN UMUM —</div>
+    <div class="faq-item">
+      <div class="faq-q">Apa Itu ASCENSION?<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">ASCENSION adalah digital store milik Zumaa yang menyediakan file setting, file auto headshot.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Bagaimana Cara Pembelian Files<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Pilih produk → tekan BELI → lanjut ke pembayaran (DANA / QRIS) → setelah bayar, tekan tombol hijau untuk kirim bukti ke admin. Files akan otomatis terkirim setelah verifikasi notif pembayaran dan tanpa menunggu respon admin.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Kenapa Harus Beli di ASCENSION?<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Harga terjangkau, proses cepat, admin responsif, dan file selalu di-update. Beli di ASCENSION by Zumaa biar aman dan tidak kena tipu.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Apakah ASCENSION Aman?<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Ya. Semua transaksi melalui channel resmi. Setelah bukti pembayaran diverifikasi, file dikirim langsung. Tidak ada penipuan.</div>
+    </div>
+  </div>
+
+
+  <div class="cbox" style="margin-top:4px">
+    <div class="chead"><div class="ico">📢</div><h3>RAGU?</h3></div>
+    <p class="cdesc">Join saluran feedback GP biar lebih yakin sebelum beli.</p>
+    <a class="bcon" href="https://whatsapp.com/channel/0029Vb99UGp0QeateFGn2R0q" target="_blank" rel="noopener"><span class="left"><span class="dot wa">W</span> JOIN SALURAN FEEDBACK GP</span><span class="chev">›</span></a>
+  </div>
+
+  <div class="cbox">
+    <div class="chead"><div class="ico">💬</div><h3>KONTAK ADMIN</h3></div>
+    <p class="cdesc">Butuh bantuan? Hubungi admin atau owner kami.</p>
+    <a class="bcon" href="https://wa.me/6285124227205" target="_blank" rel="noopener"><span class="left"><span class="dot wa">W</span> KONTAK ADMIN</span><span class="chev">›</span></a>
+    <a class="bcon" href="https://wa.me/62895639024985" target="_blank" rel="noopener"><span class="left"><span class="dot wa">W</span> KONTAK OWNER</span><span class="chev">›</span></a>
+    <a class="bcon" href="https://t.me/ZumaAscension" target="_blank" rel="noopener"><span class="left"><span class="dot tg">T</span> TELEGRAM ADMIN</span><span class="chev">›</span></a>
+  </div>
+  <div class="footer"><div class="fb">ASCENSION</div><div class="fs">By Zumaa</div><div class="fc">© 2026 ASCENSION. All rights reserved.</div></div>
+</div>
+
+<div id="page-cat" class="page">
+  <div class="phdr"><h1 id="cat-title">PRODUK</h1><p>PILIH VARIAN</p></div>
+  <div class="sec" id="cat-list"></div>
+  </div>
+
+<div id="page-order" class="page">
+  <div class="phdr"><h1>ORDER SUMMARY</h1><p>RINGKASAN PESANAN</p></div>
+  <div class="sum">
+    <div class="srow"><span class="sl">Produk</span><span class="sv" id="sum-name">—</span></div>
+    <div class="srow"><span class="sl">Kategori</span><span class="sv" id="sum-cat">—</span></div>
+    <div class="srow"><span class="sl">Harga</span><span class="sv" id="sum-price">—</span></div>
+    <div class="srow stot"><span class="sl">Total</span><span class="sv" id="sum-total">—</span></div>
+    <div id="sum-keunggulan" style="margin-top:14px"></div>
+    <button class="bmain" id="btn-to-pay">LANJUT KE PEMBAYARAN</button>
+  </div>
+</div>
+
+<div id="page-method" class="page">
+  <div class="phdr"><h1>PAYMENT METHOD</h1><p>Pilih metode pembayaran</p></div>
+  <div class="pm-wrap">
+    <div class="pm" id="go-dana">
+      <div class="pm-ico"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/b3292872-9977-4976-bff2-c97df9106e97.jpg" alt="DANA"></div>
+      <div class="pm-info"><div class="pm-name">DANA</div><div class="pm-desc">Instant Payment</div></div>
+      <div class="pm-arr">›</div>
+    </div>
+    <div class="pm" id="go-qris">
+      <div class="pm-ico"><img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/a90817db-08ae-4bf9-9e19-ae39dc83b261.jpg" alt="QRIS"></div>
+      <div class="pm-info"><div class="pm-name">QRIS</div><div class="pm-desc">Scan & Pay</div></div>
+      <div class="pm-arr">›</div>
+    </div>
+  </div>
+</div>
+
+<div id="page-dana" class="page">
+  <div class="phdr"><h1>PAY WITH DANA</h1><p>Transfer ke nomor berikut</p></div>
+  <div class="sec">
+    <div class="card" style="display:block;padding:20px">
+      <div class="info-row"><span class="info-label">DANA NUMBER</span><span class="info-val">0895-6390-28154</span></div>
+      <div class="info-row"><span class="info-label">RECIPIENT</span><span class="info-val purple">M -K -M</span></div>
+      <button class="btn-copy" id="btn-copy">COPY DANA NUMBER</button>
+    </div>
+    <div class="card" style="display:block;padding:18px">
+      <div class="stitle" style="margin-bottom:10px">CARA BAYAR</div>
+      <ol class="steps">
+        <li>Buka aplikasi DANA</li>
+        <li>Transfer ke nomor di atas</li>
+        <li>Pastikan nama penerima: M -K -M</li>
+        <li>Setelah transfer berhasil, tekan tombol hijau di bawah</li>
+      </ol>
+      <button class="btn-proof" id="btn-proof-dana">SUDAH BAYAR? KIRIM BUKTI KE ADMIN</button>
+      <p class="proof-note">Lampirkan screenshot bukti di chat · Setelah verifikasi files akan otomatis terkirim</p>
+    </div>
+  </div>
+</div>
+
+<div id="page-qris" class="page">
+  <div class="phdr"><h1>PAY WITH QRIS</h1><p>Scan QRIS untuk membayar</p></div>
+  <div class="qris-wrap">
+    <div class="qris-card">
+      <div class="qris-label">QRIS ASCENSION</div>
+      <div class="qris-box" id="qris-open">
+        <img src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/8efc9bb0-1c23-42f2-aa0c-0a19431bcb2a.png" alt="QRIS">
+      </div>
+      <div class="qris-hint">👆 TAP untuk Zoom / Fullscreen</div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:16px">
+    <div class="card" style="display:block;padding:18px">
+      <div class="stitle" style="margin-bottom:10px">CARA BAYAR</div>
+      <ol class="steps">
+        <li>Tap QRIS agar membesar, lalu screenshot</li>
+        <li>Buka e-wallet / m-banking → Scan QRIS</li>
+        <li>Masukkan nominal sesuai harga produk</li>
+        <li>Setelah berhasil, tekan tombol hijau di bawah</li>
+      </ol>
+      <button class="btn-proof" id="btn-proof-qris">SUDAH BAYAR? KIRIM BUKTI KE ADMIN</button>
+      <p class="proof-note">WhatsApp terbuka otomatis · Lampirkan screenshot bukti di chat</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="lb" id="lb">
+  <div class="lb-toolbar">
+    <button type="button" id="lb-zoom-out">−</button>
+    <span class="lb-title">QRIS · PINCH / ZOOM</span>
+    <div style="display:flex;gap:8px">
+      <button type="button" id="lb-zoom-in">+</button>
+      <button type="button" id="lb-close">✕</button>
+    </div>
+  </div>
+  <div class="lb-stage" id="lb-stage">
+    <img class="lb-img" id="lb-img" src="https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/8efc9bb0-1c23-42f2-aa0c-0a19431bcb2a.png" alt="QRIS Full">
+  </div>
+  <div class="lb-hint">Pinch zoom · + / − · ✕ tutup</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  var ADMIN = "6285124227205";
+  var DANA = "0895639028154";
+  var ICO_A = "https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/05a31f73-5760-4bf1-99ff-f30fc57357af.jpg";
+  var ICO_B = "https://i.supaimg.com/a0f6b831-2fdf-4759-84f4-6e7f84285f72/4b0f78a4-d3e5-4c69-8a7c-1a7d8e784a92.png";
+
+  var CATS = {
+    files: {
+      title: "FILES COMBO SETING",
+      items: [
+        {id:"f1", name:"HEAD PENETRATION 75%", price:5000, cat:"FILES COMBO SETING", icon:ICO_B},
+        {id:"f2", name:"HEAD PENETRATION 85%", price:15000, cat:"FILES COMBO SETING", icon:ICO_B},
+        {id:"f3", name:"HEAD PENETRATION 90%", price:20000, cat:"FILES COMBO SETING", icon:ICO_B}
+      ],
+      keunggulan: [
+        "AIMLOCK BODY ON",
+        "AIMDRAG / AIMBONE ON",
+        "EASY TOTEM (mirip sensi 400)",
+        "BUAT TEKEN AIM GAK MIS",
+        "BUAT PEPENG AIM NEMPEL"
+      ]
+    },
+    nemrax: {
+      title: "FILE X NEMERA BRUTAL",
+      items: [
+        {id:"x1", name:"AIM -X NEMERA V3", price:7000, cat:"AIM DRAG NI TRIX NEMRA X", icon:ICO_A},
+        {id:"x4", name:"AIM -X NEMERA V4", price:15000, cat:"AIM DRAG NI TRIX NEMRA X", icon:ICO_A},
+        {id:"x3", name:"AIM -X NEMERA V5", price:25000, cat:"AIM DRAG NI TRIX NEMRA X", icon:ICO_A}
+      ],
+      keunggulan: [
+        "BRUTAL HEAD",
+        "AIM DRAG DI ATAS KEPALA",
+        "BONUS SETINGAN GAME PRIVAT ASCENSION",
+        "SUP ALL FF / SUP AL DEVICE",
+        "TANPA PASANG ULANG"
+      ]
+    },
+    fileseting: {
+      title: "FILE SETING",
+      items: [
+        {id:"s1", name:"PRIVAT SETINGAN GAME", price:4000, cat:"FILE SETING", icon:ICO_B},
+        {id:"s2", name:"AIM DRAG NO TRIX", price:15000, cat:"FILE SETING", icon:ICO_A}
+      ],
+      keunggulan: [
+        "DRAG NO TRIX",
+        "SET ANDRO",
+        "SETINGAN GAME",
+        "PRIVAT SETINGS ASCENSION",
+      ]
+    }
+  };
+
+  var selected = null;
+  var animating = false;
+  var currentPage = "home";
+
+  function rp(n){ return "Rp" + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+
+  function toast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show"); }, 2200);
+  }
+
+  function renderKeunggulan(list){
+    if(!list || !list.length) return "";
+    var html = '<div class="keunggulan"><h3 KEUNGGULAN FILES</h3><ul>';
+    list.forEach(function(x){ html += "<li>" + x + "</li>"; });
+    html += "</ul></div>";
+    return html;
+  }
+
+  function show(id){
+    if(animating || id === currentPage) return;
+    animating = true;
+    var from = document.getElementById("page-" + currentPage);
+    var to = document.getElementById("page-" + id);
+    if(!to){ animating = false; return; }
+    to.style.display = "block";
+    to.classList.add("enter-from-right");
+    to.offsetHeight;
+    requestAnimationFrame(function(){
+      if(from){ from.classList.remove("active"); from.classList.add("exit-left"); }
+      to.classList.remove("enter-from-right");
+      to.classList.add("active");
+    });
+    setTimeout(function(){
+      if(from){ from.classList.remove("exit-left"); from.style.display = ""; }
+      currentPage = id; animating = false; window.scrollTo(0,0);
+    }, 430);
+    try{ history.pushState({p:id}, "", "#" + id); }catch(e){}
+  }
+
+  window.addEventListener("popstate", function(e){
+    var p = (e.state && e.state.p) ? e.state.p : "home";
+    if(p === currentPage) return;
+    var from = document.getElementById("page-" + currentPage);
+    var to = document.getElementById("page-" + p);
+    if(!to) return;
+    animating = true;
+    to.style.display = "block";
+    to.style.transform = "translateX(-24px) scale(.985)";
+    to.style.opacity = "0";
+    to.offsetHeight;
+    requestAnimationFrame(function(){
+      if(from){ from.classList.remove("active"); from.style.transform = "translateX(28px) scale(.985)"; from.style.opacity = "0"; }
+      to.style.transform = "translateX(0) scale(1)"; to.style.opacity = "1"; to.classList.add("active");
+    });
+    setTimeout(function(){
+      if(from){ from.style.display = ""; from.style.transform = ""; from.style.opacity = ""; }
+      to.style.transform = ""; to.style.opacity = "";
+      currentPage = p; animating = false; window.scrollTo(0,0);
+    }, 430);
+  });
+  try{ history.replaceState({p:"home"}, "", "#home"); }catch(e){}
+
+  document.querySelectorAll(".card[data-cat]").forEach(function(card){
+    card.addEventListener("click", function(){
+      var key = this.getAttribute("data-cat");
+      var cat = CATS[key];
+      if(!cat) return;
+      document.getElementById("cat-title").textContent = cat.title;
+      var html = "";
+      cat.items.forEach(function(p){
+        html += '<div class="prod"><div class="ptop"><div class="cicon"><img src="'+p.icon+'" alt=""></div><div class="cinfo"><div class="pname">'+p.name+'</div><div class="pprice">'+rp(p.price)+'</div></div></div><button class="bbuy" data-id="'+p.id+'" data-cat="'+key+'">BELI</button></div>';
+      });
+      document.getElementById("cat-list").innerHTML = html;
+      show("cat");
+    });
+  });
+
+  document.getElementById("cat-list").addEventListener("click", function(e){
+    var btn = e.target.closest ? e.target.closest(".bbuy") : null;
+    if(!btn) return;
+    var id = btn.getAttribute("data-id");
+    var ckey = btn.getAttribute("data-cat");
+    var cat = CATS[ckey];
+    if(!cat) return;
+    var prod = null;
+    for(var i=0;i<cat.items.length;i++){ if(cat.items[i].id === id){ prod = cat.items[i]; break; } }
+    if(!prod) return;
+    selected = prod;
+    selected._keunggulan = cat.keunggulan;
+    document.getElementById("sum-name").textContent = prod.name;
+    document.getElementById("sum-cat").textContent = prod.cat;
+    document.getElementById("sum-price").textContent = rp(prod.price);
+    document.getElementById("sum-total").textContent = rp(prod.price);
+    document.getElementById("sum-keunggulan").innerHTML = renderKeunggulan(cat.keunggulan);
+    show("order");
+  });
+
+  document.getElementById("btn-to-pay").onclick = function(){ if(selected) show("method"); };
+  document.getElementById("go-dana").onclick = function(){ show("dana"); };
+  document.getElementById("go-qris").onclick = function(){ show("qris"); };
+
+  document.getElementById("btn-copy").onclick = function(){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(DANA).then(function(){ toast("Nomor DANA berhasil disalin!"); });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = DANA; ta.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); toast("Nomor DANA berhasil disalin!"); }catch(e){}
+      document.body.removeChild(ta);
+    }
+  };
+
+  function sendProof(method){
+    if(!selected){ toast("Pilih produk dulu"); return; }
+    var msg = "Cek minn\n> " + selected.name;
+    window.open("https://wa.me/" + ADMIN + "?text=" + encodeURIComponent(msg), "_blank");
+  }
+  document.getElementById("btn-proof-dana").onclick = function(){ sendProof("DANA"); };
+  document.getElementById("btn-proof-qris").onclick = function(){ sendProof("QRIS"); };
+
+  document.querySelectorAll(".faq-q").forEach(function(q){
+    q.addEventListener("click", function(){
+      var item = this.parentElement;
+      var wasOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item.open").forEach(function(el){ el.classList.remove("open"); });
+      if(!wasOpen) item.classList.add("open");
+    });
+  });
+
+  var lb = document.getElementById("lb");
+  var stage = document.getElementById("lb-stage");
+  var img = document.getElementById("lb-img");
+  var scale = 1, minScale = 1, maxScale = 5;
+  var posX = 0, posY = 0, lastX = 0, lastY = 0, dragging = false;
+  var pinchStartDist = 0, pinchStartScale = 1;
+  function applyTransform(){ img.style.transform = "translate("+posX+"px,"+posY+"px) scale("+scale+")"; }
+  function resetZoom(){ scale = 1; posX = 0; posY = 0; applyTransform(); }
+  document.getElementById("qris-open").onclick = function(){ resetZoom(); lb.classList.add("open"); };
+  document.getElementById("lb-close").onclick = function(){ lb.classList.remove("open"); resetZoom(); };
+  document.getElementById("lb-zoom-in").onclick = function(){ scale = Math.min(maxScale, scale + 0.4); applyTransform(); };
+  document.getElementById("lb-zoom-out").onclick = function(){ scale = Math.max(minScale, scale - 0.4); if(scale === 1){ posX = 0; posY = 0; } applyTransform(); };
+  stage.addEventListener("touchstart", function(e){
+    if(e.touches.length === 1){ dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
+    else if(e.touches.length === 2){
+      dragging = false;
+      var dx = e.touches[0].clientX - e.touches[1].clientX;
+      var dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist = Math.sqrt(dx*dx + dy*dy); pinchStartScale = scale;
+    }
+  }, {passive:true});
+  stage.addEventListener("touchmove", function(e){
+    e.preventDefault();
+    if(e.touches.length === 1 && dragging && scale > 1){
+      posX += e.touches[0].clientX - lastX; posY += e.touches[0].clientY - lastY;
+      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; applyTransform();
+    } else if(e.touches.length === 2){
+      var dx = e.touches[0].clientX - e.touches[1].clientX;
+      var dy = e.touches[0].clientY - e.touches[1].clientY;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      if(pinchStartDist > 0){ scale = Math.min(maxScale, Math.max(minScale, pinchStartScale * (dist / pinchStartDist))); applyTransform(); }
+    }
+  }, {passive:false});
+  stage.addEventListener("touchend", function(){ dragging = false; pinchStartDist = 0; if(scale < 1.05){ scale = 1; posX = 0; posY = 0; applyTransform(); } });
+  stage.addEventListener("mousedown", function(e){ if(scale <= 1) return; dragging = true; lastX = e.clientX; lastY = e.clientY; });
+  window.addEventListener("mousemove", function(e){ if(!dragging) return; posX += e.clientX - lastX; posY += e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; applyTransform(); });
+  window.addEventListener("mouseup", function(){ dragging = false; });
+  stage.addEventListener("wheel", function(e){ e.preventDefault(); scale = Math.min(maxScale, Math.max(minScale, scale + (e.deltaY > 0 ? -0.2 : 0.2))); if(scale === 1){ posX = 0; posY = 0; } applyTransform(); }, {passive:false});
+})();
+</script>
+</body>
+</html>
